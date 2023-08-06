@@ -1,8 +1,12 @@
 from django.shortcuts import render
 
+
 def index(request):
-    return render(request, template_name="products/index.html")
+    context = {"title": "Store"}
+    return render(request, template_name="products/index.html", context=context)
 
 
 def products(request):
-    return render(request, template_name="products/products.html")
+    context = {"title": "Store - Каталог"}
+    # добавити в контекс бд товарів, щоб добавити в шаблон
+    return render(request, template_name="products/products.html", context=context)
