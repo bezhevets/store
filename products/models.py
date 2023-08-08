@@ -4,6 +4,8 @@ import uuid
 from django.db import models
 from django.utils.text import slugify
 
+from users.models import User
+
 
 class ProductCategory(models.Model):
     name = models.CharField(max_length=128)
@@ -38,5 +40,15 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class Basket(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=0)
+    created_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} added {self.product.name}, {self.product.price}"
 
 
