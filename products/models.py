@@ -42,13 +42,25 @@ class Product(models.Model):
         return self.name
 
 
+class BasketQuerySet(models.QuerySet):
+    def total_sum(self):
+        return sum(basket.sum() for basket in self)
+
+    def total_quantity(self):
+        return sum(basket.quantity for basket in self)
+
+
 class Basket(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=0)
     created_time = models.DateTimeField(auto_now_add=True)
 
+    # перевизначили object
+    objects = BasketQuerySet.as_manager()
+
     def __str__(self):
         return f"{self.user} added {self.product.name}, {self.product.price}"
 
-
+    def sum(self):
+        return self.product.price * self.quantity
