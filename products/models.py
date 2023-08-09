@@ -11,8 +11,9 @@ class ProductCategory(models.Model):
     name = models.CharField(max_length=128)
     description = models.TextField(null=True, blank=True)
 
-    # class Meta:
-    #     ordering = ["name"]
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
 
     def __str__(self) -> str:
         return self.name
@@ -35,8 +36,9 @@ class Product(models.Model):
     image = models.ImageField(upload_to=product_image_file_path)
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
 
-    # class Meta:
-    #     ordering = ["name"]
+    class Meta:
+        verbose_name = "Product"
+        verbose_name_plural = "Products"
 
     def __str__(self) -> str:
         return self.name
