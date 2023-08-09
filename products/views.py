@@ -9,13 +9,17 @@ def index(request):
     return render(request, template_name="products/index.html", context=context)
 
 
-def products(request):
+def products(request, category_id=None):
+    if category_id:
+        products = Product.objects.filter(category_id=category_id)
+    else:
+        products = Product.objects.all()
+
     context = {
         "title": "Store - Каталог",
-        "products": Product.objects.all(),
+        "products": products,
         "categories": ProductCategory.objects.all()
     }
-    # добавити в контекс бд товарів, щоб добавити в шаблон
     return render(request, template_name="products/products.html", context=context)
 
 
