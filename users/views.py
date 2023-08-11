@@ -1,11 +1,12 @@
 from django.shortcuts import render, HttpResponseRedirect
-from django.contrib import auth, messages
-from django.urls import reverse
+from django.contrib import auth
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
+from django.views.generic import CreateView
 
 from products.models import Basket
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
-
+from users.models import User
 
 
 def login(request):
@@ -14,7 +15,6 @@ def login(request):
         if form.is_valid():
             username = request.POST["username"]
             password = request.POST["password"]
-            print(password)
             user = auth.authenticate(username=username, password=password)
             if user:
                 auth.login(request, user)
@@ -25,17 +25,12 @@ def login(request):
     return render(request, "registration/login.html", context=context)
 
 
-def registration(request):
-    if request.method == "POST":
-        form = UserRegistrationForm(data=request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Поздравляем! Вы успешно зарегестрировались")
-            return HttpResponseRedirect(reverse("users:login"))
-    else:
-        form = UserRegistrationForm()
-    context = {"form": form}
-    return render(request, "user/user_registration.html", context=context)
+class UserCreateView(CreateView):
+    model = User
+    form_class = UserRegistrationForm
+    template_name = "user/user_registration.html"
+    success_url = reverse_lazy("users:login")
+
 
 @login_required
 def profile(request):
