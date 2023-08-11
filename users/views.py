@@ -1,7 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, HttpResponseRedirect
-from django.contrib import auth
-from django.urls import reverse, reverse_lazy
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
 
 from products.models import Basket
@@ -9,20 +8,13 @@ from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
 from users.models import User
 
 
-def login(request):
-    if request.method == "POST":
-        form = UserLoginForm(data=request.POST)
-        if form.is_valid():
-            username = request.POST["username"]
-            password = request.POST["password"]
-            user = auth.authenticate(username=username, password=password)
-            if user:
-                auth.login(request, user)
-                return HttpResponseRedirect(reverse("products:index"))
-    else:
-        form = UserLoginForm()
-    context = {"form": form}
-    return render(request, "registration/login.html", context=context)
+class UserLoginView(LoginView):
+    template_name = "registration/login.html"
+    form_class = UserLoginForm
+
+
+class UserLogoutView(LogoutView):
+    next_page = reverse_lazy("products:index")
 
 
 class UserCreateView(CreateView):
@@ -50,8 +42,3 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
         context["title"] = "Store - Профиль"
         context["basket"] = Basket.objects.filter(user=self.request.user)
         return context
-
-
-def logout(request):
-    auth.logout(request)
-    return HttpResponseRedirect(reverse("products:index"))
