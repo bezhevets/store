@@ -1,8 +1,8 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth
 from django.urls import reverse, reverse_lazy
-from django.contrib.auth.decorators import login_required
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 
 from products.models import Basket
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
@@ -31,24 +31,26 @@ class UserCreateView(CreateView):
     template_name = "user/user_registration.html"
     success_url = reverse_lazy("users:login")
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(UserCreateView, self).get_context_data()
+        context["title"] = "Store - Регистрация"
+        return context
 
-@login_required
-def profile(request):
-    if request.method == "POST":
-        form = UserProfileForm(instance=request.user, data=request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("users:profile"))
-        else:
-            print(form.errors)
-    else:
-        form = UserProfileForm(instance=request.user)
-    context = {
-        "title": "Store - Профиль",
-        "form": form,
-        "basket": Basket.objects.filter(user=request.user),
-    }
-    return render(request, "user/user_profile.html", context=context)
+
+class UserProfileView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UserProfileForm
+    template_name = "user/user_profile.html"
+
+    def get_success_url(self):
+        return reverse_lazy("users:profile", args=(self.object.id,))
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(UserProfileView, self).get_context_data()
+        context["title"] = "Store - Профиль"
+        context["basket"] = Basket.objects.filter(user=self.request.user)
+        return context
+
 
 def logout(request):
     auth.logout(request)
