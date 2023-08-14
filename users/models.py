@@ -6,11 +6,9 @@ from django.urls import reverse
 from django.utils.timezone import now
 
 
-
 class User(AbstractUser):
     is_verified_email = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
-
 
 
 class EmailVerification(models.Model):

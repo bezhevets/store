@@ -1,4 +1,4 @@
-import  uuid
+import uuid
 from datetime import timedelta
 
 from django import forms
@@ -91,7 +91,6 @@ class UserRegistrationForm(UserCreationForm):
         record = EmailVerification.objects.create(code=uuid.uuid4(), user=user, expiration=expiration)
         record.send_verification_email()
         return user
-
 
 
 class UserProfileForm(UserChangeForm):

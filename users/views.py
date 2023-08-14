@@ -48,7 +48,7 @@ class UserProfileView(TitleMixin, LoginRequiredMixin, UpdateView):
 class EmailVerificationView(TitleMixin, TemplateView):
     title = "Подтверждение email"
     template_name = "user/email_verification.html"
-    
+
     def get(self, request, *args, **kwargs):
         code = kwargs["code"]
         user = User.objects.get(email=kwargs["email"])
