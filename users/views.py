@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, TemplateView
 
@@ -43,6 +43,14 @@ class UserProfileView(TitleMixin, LoginRequiredMixin, UpdateView):
         context = super(UserProfileView, self).get_context_data()
         context["basket"] = Basket.objects.filter(user=self.request.user)
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        user_id = kwargs.get("pk")
+
+        if not self.request.user.is_authenticated or self.request.user.id != user_id:
+            return HttpResponseForbidden("У вас нет прав на редактирование этого профиля")
+
+        return super().dispatch(request, *args, **kwargs)
 
 
 class EmailVerificationView(TitleMixin, TemplateView):

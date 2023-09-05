@@ -42,8 +42,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "django.contrib.sites",
+
     "products",
     "users",
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    "allauth.socialaccount.providers.github",
 ]
 
 MIDDLEWARE = [
@@ -141,12 +148,28 @@ LOGIN_URL = "/users/login/"
 LOGIN_REDIRECT_URL = "/products/"
 
 # коли перевіряємо листи в констолі
-# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # settings for gmail.com
-EMAIL_HOST = os.environ["EMAIL_HOST"]
-EMAIL_PORT = os.environ["EMAIL_PORT"]
-EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
-EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+# EMAIL_HOST = os.environ["EMAIL_HOST"]
+# EMAIL_PORT = os.environ["EMAIL_PORT"]
+# EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+# EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    'github': {
+        'SCOPE': [
+            'user',
+        ],
+    }
+}
